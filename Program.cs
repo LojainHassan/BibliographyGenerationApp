@@ -1,4 +1,18 @@
+using BibliographyGenerationApp.Contracts;
+using BibliographyGenerationApp.Data;
+using BibliographyGenerationApp.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+
+builder.Services.AddDbContext<BibliographyDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<IDepositOrderService, DepositOrderService>();
+builder.Services.AddScoped<IDepositOrderToBookService, DepositOrderToBookService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
