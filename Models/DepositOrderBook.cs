@@ -1,8 +1,9 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace BibliographyGenerationApp.Models;
 
-public class DepositOrderToBook
+public class DepositOrderBook:RootBaseModel
 {
-    public int Id { get; set; }
     [ForeignKey("DepositOrderId")]
     public Guid DepositOrderId { get; set; }
 

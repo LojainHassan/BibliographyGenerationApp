@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BibliographyGenerationApp.Services;
 
-public class DepositOrderToBookService : IDepositOrderToBookService
+public class DepositOrderToBookService : IDepositOrderBookService
 {
     private readonly BibliographyDbContext _db;
 
@@ -14,41 +14,28 @@ public class DepositOrderToBookService : IDepositOrderToBookService
         _db = db;
     }
 
-    public async Task<IReadOnlyList<DepositOrderToBook>> GetByDepositOrderIdAsync(int depositOrderId, CancellationToken cancellationToken = default)
+    public async Task<List<DepositOrderBook>> GetByDepositOrderIdAsync(Guid depositOrderId)
     {
-        return await _db.DepositOrderToBooks
-            .AsNoTracking()
-            .Where(line => line.DepositOrderId == depositOrderId)
-            .OrderBy(line => line.Title)
-            .ToListAsync(cancellationToken);
+        return new List<DepositOrderBook>();
     }
 
-    public Task<DepositOrderToBook?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public Task<DepositOrderBook?> GetByIdAsync(Guid id)
     {
         return _db.DepositOrderToBooks
             .AsNoTracking()
-            .FirstOrDefaultAsync(line => line.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(line => line.Id == id);
     }
 
-    public async Task<DepositOrderToBook> CreateAsync(DepositOrderToBook line, CancellationToken cancellationToken = default)
+    public async Task<DepositOrderBook> CreateAsync(DepositOrderBook line)
     {
-        var orderExists = await _db.DepositOrders
-            .AnyAsync(order => order.Id == line.DepositOrderId, cancellationToken);
+        throw new InvalidOperationException($"Deposit order {line.DepositOrderId} was not found.");
 
-        if (!orderExists)
-        {
-            throw new InvalidOperationException($"Deposit order {line.DepositOrderId} was not found.");
-        }
-
-        _db.DepositOrderToBooks.Add(line);
-        await _db.SaveChangesAsync(cancellationToken);
-        return line;
     }
 
-    public async Task<bool> UpdateAsync(DepositOrderToBook line, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateAsync(DepositOrderBook line)
     {
         var existing = await _db.DepositOrderToBooks
-            .FirstOrDefaultAsync(item => item.Id == line.Id, cancellationToken);
+            .FirstOrDefaultAsync(item => item.Id == line.Id);
 
         if (existing is null)
         {
@@ -63,14 +50,14 @@ public class DepositOrderToBookService : IDepositOrderToBookService
         existing.PublicationYear = line.PublicationYear;
         existing.Quantity = line.Quantity;
 
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(Guid id)
     {
         var existing = await _db.DepositOrderToBooks
-            .FirstOrDefaultAsync(line => line.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(line => line.Id == id);
 
         if (existing is null)
         {
@@ -78,7 +65,7 @@ public class DepositOrderToBookService : IDepositOrderToBookService
         }
 
         _db.DepositOrderToBooks.Remove(existing);
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync();
         return true;
     }
 }

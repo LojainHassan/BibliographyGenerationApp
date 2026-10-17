@@ -12,7 +12,7 @@ builder.Services.AddDbContext<BibliographyDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IDepositOrderService, DepositOrderService>();
-builder.Services.AddScoped<IDepositOrderToBookService, DepositOrderToBookService>();
+builder.Services.AddScoped<IDepositOrderBookService, DepositOrderToBookService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

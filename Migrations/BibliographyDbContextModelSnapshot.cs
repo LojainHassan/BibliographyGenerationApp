@@ -24,19 +24,24 @@ namespace BibliographyGenerationApp.Migrations
 
             modelBuilder.Entity("BibliographyGenerationApp.Models.DepositOrder", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DepositorName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("DeweyClassificationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeweyNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)
@@ -55,28 +60,38 @@ namespace BibliographyGenerationApp.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DeweyClassificationId");
 
                     b.HasIndex("OrderNumber")
                         .IsUnique();
 
-                    b.ToTable("DepositOrder", (string)null);
+                    b.ToTable("DepositOrderInfo", (string)null);
                 });
 
-            modelBuilder.Entity("BibliographyGenerationApp.Models.DepositOrderToBook", b =>
+            modelBuilder.Entity("BibliographyGenerationApp.Models.DepositOrderBook", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Author")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<int>("DepositOrderId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DepositOrderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Isbn")
                         .HasMaxLength(20)
@@ -103,10 +118,47 @@ namespace BibliographyGenerationApp.Migrations
 
                     b.HasIndex("DepositOrderId");
 
-                    b.ToTable("DepositOrderToBook", (string)null);
+                    b.ToTable("DepositOrderBookInfo", (string)null);
                 });
 
-            modelBuilder.Entity("BibliographyGenerationApp.Models.DepositOrderToBook", b =>
+            modelBuilder.Entity("BibliographyGenerationApp.Models.DeweyClassificationInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeweyClassificationInfo");
+                });
+
+            modelBuilder.Entity("BibliographyGenerationApp.Models.DepositOrder", b =>
+                {
+                    b.HasOne("BibliographyGenerationApp.Models.DeweyClassificationInfo", "DeweyClassificationInfo")
+                        .WithMany("DepositOrders")
+                        .HasForeignKey("DeweyClassificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeweyClassificationInfo");
+                });
+
+            modelBuilder.Entity("BibliographyGenerationApp.Models.DepositOrderBook", b =>
                 {
                     b.HasOne("BibliographyGenerationApp.Models.DepositOrder", "DepositOrder")
                         .WithMany("Books")
@@ -120,6 +172,11 @@ namespace BibliographyGenerationApp.Migrations
             modelBuilder.Entity("BibliographyGenerationApp.Models.DepositOrder", b =>
                 {
                     b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("BibliographyGenerationApp.Models.DeweyClassificationInfo", b =>
+                {
+                    b.Navigation("DepositOrders");
                 });
 #pragma warning restore 612, 618
         }

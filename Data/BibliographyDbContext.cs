@@ -1,5 +1,6 @@
 using BibliographyGenerationApp.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BibliographyGenerationApp.Data;
 
@@ -9,16 +10,15 @@ public class BibliographyDbContext : DbContext
         : base(options)
     {
     }
-
     public DbSet<DepositOrder> DepositOrders => Set<DepositOrder>();
 
-    public DbSet<DepositOrderToBook> DepositOrderToBooks => Set<DepositOrderToBook>();
+    public DbSet<DepositOrderBook> DepositOrderToBooks => Set<DepositOrderBook>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DepositOrder>(entity =>
         {
-            entity.ToTable("DepositOrder");
+            entity.ToTable("DepositOrderInfo");
             entity.HasKey(order => order.Id);
             entity.Property(order => order.OrderNumber).IsRequired().HasMaxLength(50);
             entity.HasIndex(order => order.OrderNumber).IsUnique();
@@ -31,9 +31,9 @@ public class BibliographyDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<DepositOrderToBook>(entity =>
+        modelBuilder.Entity<DepositOrderBook>(entity =>
         {
-            entity.ToTable("DepositOrderToBook");
+            entity.ToTable("DepositOrderBookInfo");
             entity.HasKey(line => line.Id);
             entity.Property(line => line.Title).IsRequired().HasMaxLength(500);
             entity.Property(line => line.Author).HasMaxLength(300);

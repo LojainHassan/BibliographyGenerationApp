@@ -1,6 +1,7 @@
 using BibliographyGenerationApp.Contracts;
 using BibliographyGenerationApp.Data;
 using BibliographyGenerationApp.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace BibliographyGenerationApp.Services;
@@ -14,40 +15,42 @@ public class DepositOrderService : IDepositOrderService
         _db = db;
     }
 
-    public async Task<IReadOnlyList<DepositOrder>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<List<DepositOrder>> GetAllAsync()
     {
-        return await _db.DepositOrders
-            .AsNoTracking()
-            .Include(order => order.Books)
-            .OrderByDescending(order => order.OrderDate)
-            .ThenByDescending(order => order.Id)
-            .ToListAsync(cancellationToken);
+        var allOrders = await _db.DepositOrders.ToListAsync();
+        return allOrders;
     }
 
-    public Task<DepositOrder?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<DepositOrder?> GetByIdAsync(Guid id)
     {
-        return _db.DepositOrders
-            .AsNoTracking()
-            .Include(order => order.Books)
-            .FirstOrDefaultAsync(order => order.Id == id, cancellationToken);
-    }
-
-    public async Task<DepositOrder> CreateAsync(DepositOrder depositOrder, CancellationToken cancellationToken = default)
-    {
-        if (depositOrder.CreatedAt == default)
+        var order = await _db.DepositOrders.FirstOrDefaultAsync(o=>o.Id == id);
+        if(order == null)
         {
-            depositOrder.CreatedAt = DateTime.UtcNow;
+            Console.WriteLine("The object was not found in the database.");
+            throw new InvalidOperationException($"Deposit order {id} was not found.");
+        }
+        else
+        {
+            return order;
+        }
+    }
+
+    public async Task<DepositOrder> CreateAsync(DepositOrder depositOrder)
+    {
+        if (depositOrder.CreationTime == default)
+        {
+            depositOrder.CreationTime = DateTime.UtcNow;
         }
 
         _db.DepositOrders.Add(depositOrder);
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync();
         return depositOrder;
     }
 
-    public async Task<bool> UpdateAsync(DepositOrder depositOrder, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateAsync(DepositOrder depositOrder)
     {
         var existing = await _db.DepositOrders
-            .FirstOrDefaultAsync(order => order.Id == depositOrder.Id, cancellationToken);
+            .FirstOrDefaultAsync(order => order.Id == depositOrder.Id);
 
         if (existing is null)
         {
@@ -60,14 +63,14 @@ public class DepositOrderService : IDepositOrderService
         existing.Status = depositOrder.Status;
         existing.Notes = depositOrder.Notes;
 
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(Guid id)
     {
         var existing = await _db.DepositOrders
-            .FirstOrDefaultAsync(order => order.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(order => order.Id == id);
 
         if (existing is null)
         {
@@ -75,7 +78,7 @@ public class DepositOrderService : IDepositOrderService
         }
 
         _db.DepositOrders.Remove(existing);
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync();
         return true;
     }
 }
