@@ -3,8 +3,8 @@ namespace BibliographyGenerationApp.Models;
 public class DepositOrderToBook
 {
     public int Id { get; set; }
-
-    public int DepositOrderId { get; set; }
+    [ForeignKey("DepositOrderId")]
+    public Guid DepositOrderId { get; set; }
 
     public string Title { get; set; } = string.Empty;
 
@@ -17,6 +17,6 @@ public class DepositOrderToBook
     public int? PublicationYear { get; set; }
 
     public int Quantity { get; set; } = 1;
-
+    [ForeignKey("DepositOrderId")]
     public DepositOrder DepositOrder { get; set; } = null!;
 }

@@ -1,9 +1,8 @@
 namespace BibliographyGenerationApp.Models;
 
-public class DepositOrder
+public class DepositOrder:RootBaseModel
 {
-    public int Id { get; set; }
-
+   
     public string OrderNumber { get; set; } = string.Empty;
 
     public DateTime OrderDate { get; set; }
@@ -14,7 +13,10 @@ public class DepositOrder
 
     public string? Notes { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    
+    public int Year { get; set; }
+    public string Subject { get; set; }
 
+    public string DeweyNumber { get; set; }
     public ICollection<DepositOrderToBook> Books { get; set; } = new List<DepositOrderToBook>();
 }
