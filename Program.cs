@@ -16,7 +16,10 @@ builder.Services.AddScoped<IDepositOrderBookService, DepositOrderToBookService>(
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-//builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddMaps(typeof(Program).Assembly);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
