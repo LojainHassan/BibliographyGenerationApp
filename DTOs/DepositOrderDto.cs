@@ -1,10 +1,10 @@
-﻿using BibliographyGenerationApp.Models;
+﻿using BibliographyGenerationApp.DTOs.RootDto;
+using BibliographyGenerationApp.Models;
 
 namespace BibliographyGenerationApp.DTOs;
 
-public class DepositOrderDto
+public class DepositOrderDto: RootDTO
 {
-    public int Id { get; set; }
 
     public string OrderNumber { get; set; } = string.Empty;
 
@@ -16,7 +16,6 @@ public class DepositOrderDto
 
     public string? Notes { get; set; }
 
-    public DateTime CreatedAt { get; set; }
 
-    public List<DepositOrderToBookDto> Books { get; set; } = new();
+    public List<DepositOrderBookDto> Books { get; set; } = new();
 }

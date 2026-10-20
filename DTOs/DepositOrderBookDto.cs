@@ -1,10 +1,11 @@
-﻿namespace BibliographyGenerationApp.DTOs;
+﻿using BibliographyGenerationApp.DTOs.RootDto;
 
-public class DepositOrderToBookDto
+namespace BibliographyGenerationApp.DTOs;
+
+public class DepositOrderBookDto: RootDTO
 {
-    public int Id { get; set; }
 
-    public int DepositOrderId { get; set; }
+    public Guid DepositOrderId { get; set; }
 
     public string Title { get; set; } = string.Empty;
 

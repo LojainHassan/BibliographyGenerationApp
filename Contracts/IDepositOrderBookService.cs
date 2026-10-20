@@ -1,16 +1,17 @@
+using BibliographyGenerationApp.DTOs;
 using BibliographyGenerationApp.Models;
 
 namespace BibliographyGenerationApp.Contracts;
 
 public interface IDepositOrderBookService
 {
-    Task<List<DepositOrderBook>> GetByDepositOrderIdAsync(Guid depositOrderId);
+    Task<List<DepositOrderBookDto>> GetByDepositOrderIdAsync(Guid depositOrderId);
 
-    Task<DepositOrderBook?> GetByIdAsync(Guid id);
+    Task<DepositOrderBookDto?> GetByIdAsync(Guid id);
 
-    Task<DepositOrderBook> CreateAsync(DepositOrderBook line);
+    Task<DepositOrderBookDto> CreateAsync(CreateUpdateBookDto line);
 
-    Task<bool> UpdateAsync(DepositOrderBook line);
+    Task<bool> UpdateAsync(DepositOrderBookDto line);
 
     Task<bool> DeleteAsync(Guid id);
 }

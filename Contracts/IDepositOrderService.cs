@@ -5,13 +5,13 @@ namespace BibliographyGenerationApp.Contracts;
 
 public interface IDepositOrderService
 {
-    Task<List<DepositOrder>> GetAllAsync();
+    Task<List<DepositOrderDto>> GetAllAsync();
 
-    Task<DepositOrder?> GetByIdAsync(Guid id);
+    Task<DepositOrderDto?> GetByIdAsync(Guid id);
 
-    Task<DepositOrder> CreateAsync(DepositOrder depositOrder);
+    Task<DepositOrderDto> CreateAsync(CreateDepositOrderBook depositOrder);
 
-    Task<bool> UpdateAsync(DepositOrder depositOrder);
+    Task<bool> UpdateAsync(DepositOrderDto depositOrder);
 
     Task<bool> DeleteAsync(Guid id);
 }

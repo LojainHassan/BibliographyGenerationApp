@@ -1,10 +1,8 @@
 
+using AutoMapper;
 using BibliographyGenerationApp.Contracts;
 using BibliographyGenerationApp.Data;
 using BibliographyGenerationApp.DTOs;
-using BibliographyGenerationApp.Mappers;
-using BibliographyGenerationApp.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace BibliographyGenerationApp.Services;
@@ -12,19 +10,22 @@ namespace BibliographyGenerationApp.Services;
 public class DepositOrderService : IDepositOrderService
 {
     private readonly BibliographyDbContext _db;
-
-    public DepositOrderService(BibliographyDbContext db)
+    private readonly IMapper _mapper;
+    public DepositOrderService(BibliographyDbContext db,
+        IMapper mapper)
     {
         _db = db;
+        _mapper = mapper;
     }
 
-    public async Task<List<DepositOrder>> GetAllAsync()
+    public async Task<List<DepositOrderDto>> GetAllAsync()
     {
         var allOrders = await _db.DepositOrders.ToListAsync();
-        return allOrders;
+        var allOrdersDto = _mapper.Map<List<DepositOrderDto>>(allOrders);
+        return allOrdersDto;
     }
 
-    public async Task<DepositOrder?> GetByIdAsync(Guid id)
+    public async Task<DepositOrderDto?> GetByIdAsync(Guid id)
     {
         var order = await _db.DepositOrders.FirstOrDefaultAsync(o=>o.Id == id);
         if(order == null)
@@ -38,7 +39,7 @@ public class DepositOrderService : IDepositOrderService
         }
     }
 
-    public async Task<DepositOrder> CreateAsync(DepositOrder depositOrder)
+    public async Task<DepositOrderDto> CreateAsync(CreateDepositOrderBook depositOrder)
     {
         if (depositOrder.CreationTime == default)
         {
@@ -50,7 +51,7 @@ public class DepositOrderService : IDepositOrderService
         return depositOrder;
     }
 
-    public async Task<bool> UpdateAsync(DepositOrder depositOrder)
+    public async Task<bool> UpdateAsync(DepositOrderDto depositOrder)
     {
         var existing = await _db.DepositOrders
             .FirstOrDefaultAsync(order => order.Id == depositOrder.Id);
