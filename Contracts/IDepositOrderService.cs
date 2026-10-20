@@ -1,4 +1,5 @@
-using BibliographyGenerationApp.Models;
+
+using BibliographyGenerationApp.DTOs;
 
 namespace BibliographyGenerationApp.Contracts;
 

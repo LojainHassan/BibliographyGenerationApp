@@ -1,6 +1,8 @@
+
 using BibliographyGenerationApp.Contracts;
 using BibliographyGenerationApp.Data;
-using BibliographyGenerationApp.Models;
+using BibliographyGenerationApp.DTOs;
+using BibliographyGenerationApp.Mappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace BibliographyGenerationApp.Services;
@@ -21,7 +23,7 @@ public class DepositOrderToBookService : IDepositOrderBookService
 
     public Task<DepositOrderBook?> GetByIdAsync(Guid id)
     {
-        return _db.DepositOrderToBooks
+        var line = await _db.DepositOrderToBooks
             .AsNoTracking()
             .FirstOrDefaultAsync(line => line.Id == id);
     }
@@ -42,13 +44,24 @@ public class DepositOrderToBookService : IDepositOrderBookService
             return false;
         }
 
-        existing.DepositOrderId = line.DepositOrderId;
-        existing.Title = line.Title;
-        existing.Author = line.Author;
-        existing.Isbn = line.Isbn;
-        existing.Publisher = line.Publisher;
-        existing.PublicationYear = line.PublicationYear;
-        existing.Quantity = line.Quantity;
+        var orderExists = await _db.DepositOrders
+            .AnyAsync(
+                order => order.Id == dto.DepositOrderId,
+                cancellationToken);
+
+        if (!orderExists)
+        {
+            throw new InvalidOperationException(
+                $"Deposit order {dto.DepositOrderId} was not found.");
+        }
+
+        existing.DepositOrderId = dto.DepositOrderId;
+        existing.Title = dto.Title;
+        existing.Author = dto.Author;
+        existing.Isbn = dto.Isbn;
+        existing.Publisher = dto.Publisher;
+        existing.PublicationYear = dto.PublicationYear;
+        existing.Quantity = dto.Quantity;
 
         await _db.SaveChangesAsync();
         return true;

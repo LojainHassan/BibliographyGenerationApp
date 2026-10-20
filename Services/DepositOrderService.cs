@@ -1,5 +1,8 @@
+
 using BibliographyGenerationApp.Contracts;
 using BibliographyGenerationApp.Data;
+using BibliographyGenerationApp.DTOs;
+using BibliographyGenerationApp.Mappers;
 using BibliographyGenerationApp.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -57,11 +60,11 @@ public class DepositOrderService : IDepositOrderService
             return false;
         }
 
-        existing.OrderNumber = depositOrder.OrderNumber;
-        existing.OrderDate = depositOrder.OrderDate;
-        existing.DepositorName = depositOrder.DepositorName;
-        existing.Status = depositOrder.Status;
-        existing.Notes = depositOrder.Notes;
+        existing.OrderNumber = dto.OrderNumber;
+        existing.OrderDate = dto.OrderDate;
+        existing.DepositorName = dto.DepositorName;
+        existing.Status = dto.Status;
+        existing.Notes = dto.Notes;
 
         await _db.SaveChangesAsync();
         return true;
