@@ -45,10 +45,7 @@ public class DepositOrderService : IDepositOrderService
     public async Task<DepositOrderDto> CreateAsync(
         CreateDepositOrderBook depositOrder)
     {
-        if (depositOrder.CreationTime == default)
-        {
-            depositOrder.CreationTime = DateTime.UtcNow;
-        }
+        
 
         var order = _mapper.Map<DepositOrder>(depositOrder);
 
