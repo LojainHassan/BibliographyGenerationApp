@@ -3,6 +3,7 @@ using AutoMapper;
 using BibliographyGenerationApp.Contracts;
 using BibliographyGenerationApp.Data;
 using BibliographyGenerationApp.DTOs;
+using BibliographyGenerationApp.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BibliographyGenerationApp.Services;
@@ -35,21 +36,31 @@ public class DepositOrderService : IDepositOrderService
         }
         else
         {
-            return order;
+            var orderdto = _mapper.Map<DepositOrderDto>(order);
+            return orderdto;
         }
     }
 
-    public async Task<DepositOrderDto> CreateAsync(CreateDepositOrderBook depositOrder)
+
+    public async Task<DepositOrderDto> CreateAsync(
+        CreateDepositOrderBook depositOrder)
     {
         if (depositOrder.CreationTime == default)
         {
             depositOrder.CreationTime = DateTime.UtcNow;
         }
 
-        _db.DepositOrders.Add(depositOrder);
+        var order = _mapper.Map<DepositOrder>(depositOrder);
+
+        _db.DepositOrders.Add(order);
+
         await _db.SaveChangesAsync();
-        return depositOrder;
+
+        var orderDto = _mapper.Map<DepositOrderDto>(order);
+
+        return orderDto;
     }
+
 
     public async Task<bool> UpdateAsync(DepositOrderDto depositOrder)
     {
@@ -61,15 +72,14 @@ public class DepositOrderService : IDepositOrderService
             return false;
         }
 
-        existing.OrderNumber = dto.OrderNumber;
-        existing.OrderDate = dto.OrderDate;
-        existing.DepositorName = dto.DepositorName;
-        existing.Status = dto.Status;
-        existing.Notes = dto.Notes;
+        _mapper.Map(depositOrder, existing);
 
         await _db.SaveChangesAsync();
+
         return true;
     }
+
+
 
     public async Task<bool> DeleteAsync(Guid id)
     {
@@ -82,7 +92,11 @@ public class DepositOrderService : IDepositOrderService
         }
 
         _db.DepositOrders.Remove(existing);
+
         await _db.SaveChangesAsync();
+
         return true;
     }
+
+
 }

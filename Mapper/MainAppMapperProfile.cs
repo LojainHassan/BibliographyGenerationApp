@@ -10,7 +10,7 @@ namespace BibliographyGenerationApp.Mapper
         {
             CreateMap<DepositOrder, DepositOrderDto>();
             CreateMap<DepositOrderDto, DepositOrder>();
-
+            CreateMap<CreateDepositOrderBook, DepositOrder>();
         }
     }
 }
